@@ -1,0 +1,14 @@
+<div class="city">
+    <div>
+      <input type="checkbox"
+             show-data
+             ng-model="$ctrl.checked"
+             ng-click="$ctrl.checkData()"/>
+             {{$ctrl.cityProperty[0]}}
+    </div>
+
+    <input type="text" ng-model="$ctrl.time" ng-class="{dirty: $ctrl.valid == false}"/>
+    <span>{{$ctrl.cityProperty[3]}}</span>
+    <span>{{$ctrl.cityProperty[4]}}</span>
+    <span>{{$ctrl.cityProperty[5]}}</span>
+</div>

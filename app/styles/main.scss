@@ -1,0 +1,59 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+
+html, body{
+  min-width: 600px;
+}
+
+.top-bar{
+  border: 1px solid black;
+  margin-bottom: 10px;
+  padding: 5px;
+  display: inline-block;
+  width: 100%;
+  button{
+    width: 100px;
+    vertical-align: top;
+    height: 51px;
+  }
+  :nth-child(1){
+    width: 200px;
+
+  }
+  :nth-child(2){
+    width: 70px;
+    text-align: center;
+    display: inline-block;
+    font-size: 12px;
+  }
+
+}
+
+.city{
+  padding: 0px 5px;
+  display: inline-block;
+  width: 100%;
+  div{
+    width: 200px;
+    display: inline-block;
+  }
+  :nth-child(2){
+    width: 40px;
+    margin: 0 15px;
+    text-align: center;
+    &.dirty{
+      background: red;
+      color: white;
+    }
+  }
+  span{
+    text-align: center;
+    width: 100px;
+    border-right: 1px solid grey;
+    overflow: hidden;
+    display: none;
+
+  }
+}
