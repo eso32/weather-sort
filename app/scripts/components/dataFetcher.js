@@ -7,6 +7,8 @@ function findIndex(location, array){
   return -1;
 }
 
+
+
 angular.module('openweatherApp')
           .component('fetcher', {
             restrict: 'E',
@@ -15,20 +17,54 @@ angular.module('openweatherApp')
               var vm = this;
               this.checked;
               this.sortType = 2;
-
+              this.arrayOfCities = [];
+              this.intervalList={};
               fetchData.then(function(response) {
                 vm.cities = response;
               });
 
-              this.sort = function(arr, elem, sortType){
-                if(sortType == 1){
-                  this.bubbleSort(arr, elem);
-                } else if(sortType == 2){
-                  this.selectionSort(arr, elem);
+              this.addcity = function(name, checked, time){
+                if(checked){
+                  var index = findIndex(name, vm.cities);
+                  var newCity = vm.cities[index];
+                  vm.arrayOfCities.push(newCity);             //dodajemy nowe miasto do listy miast obserwowanych
+                  var newIndex = vm.arrayOfCities.length-1;   //index nowo dodanego miasta
+                  vm.arrayOfCities[newIndex][3] = time;
+                  giveMeData(name);
+                  this.getCurrentData(name);
+
+                } else {
+                  var index = findIndex(name, vm.arrayOfCities);
+                  vm.arrayOfCities.splice(index,1);
                 }
               }
 
-              this.bubbleSort = function(arr, elem){
+              this.getCurrentData = function(name){
+                var index = findIndex(name, vm.arrayOfCities);
+                vm.arrayOfCities[index][2] = $interval( function(){giveMeData(name)}, vm.arrayOfCities[index][3]*1000);
+              }
+
+              function giveMeData(name){
+                var index = findIndex(name, vm.arrayOfCities);
+                var trustedUrl = $sce.trustAsResourceUrl(vm.arrayOfCities[index][1]);
+                $http.jsonp(trustedUrl, {jsonpCallbackParam: 'callback'})
+                      .then(function(response){
+                        vm.arrayOfCities[index][4] = response.data.main.temp;
+                        vm.arrayOfCities[index][5] = response.data.wind.speed;
+                        vm.arrayOfCities[index][6] = response.data.main.pressure;
+                        console.log(vm.arrayOfCities[index][0] + ' ' + vm.arrayOfCities[index][3]);
+                      })
+              }
+
+              this.sort = function(arr, elem, sortType){
+                if(sortType == 1){
+                  bubbleSort(arr, elem);
+                } else if(sortType == 2){
+                  selectionSort(arr, elem);
+                }
+              }
+
+              function bubbleSort(arr, elem){
                   console.log("bubble");
                   var len = arr.length;
 
@@ -43,11 +79,10 @@ angular.module('openweatherApp')
                         }
                      }
                    }
-                   vm.cities = arr;
                    return arr;
               }
 
-              this.selectionSort = function(arr, elem){
+              function selectionSort(arr, elem){
                 console.log("selection");
                 var minIdx, temp,
                     len = arr.length;
@@ -65,30 +100,5 @@ angular.module('openweatherApp')
                 return arr;
               }
 
-              this.isChecked = function(location, time, checked){
-                if(checked){
-                  this.getCurrentData(location, time);
-                } else {
-                  var index = findIndex(location, vm.cities);
-                  $interval.cancel(vm.cities[index][2]);
-                }
-              }
-
-              this.getCurrentData = function(location, time){
-                var index = findIndex(location, vm.cities);
-
-                vm.cities[index][2] = $interval(function(){
-                  var index = findIndex(location, vm.cities);
-                  var trustedUrl = $sce.trustAsResourceUrl(vm.cities[index][1]);
-
-                  $http.jsonp(trustedUrl, {jsonpCallbackParam: 'callback'})
-                        .then(function(response){
-                          vm.cities[index][3] = response.data.main.temp;
-                          vm.cities[index][4] = response.data.wind.speed;
-                          vm.cities[index][5] = response.data.main.pressure;
-                          console.log(vm.cities[index][0] + ": " +vm.cities[index][3]);
-                        })
-                }, time*1000);
-              }
             }]
         });

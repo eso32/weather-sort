@@ -1,15 +1,20 @@
 <h1>WEATHER FORECAST</h1>
+
 SORTING ALGORITHM: <input type="radio" name="sortArg" ng-click="$ctrl.sortType = 1"/> Bubble <input type="radio" name="sortArg" ng-click="$ctrl.sortType = 2" checked/> Selection <br />
-<span>SORT BY OPTIONS:</span>
-<div class="top-bar">
-  <button ng-click="$ctrl.sort($ctrl.cities, 0, $ctrl.sortType)">NAME</button>
-  <span>Refresh every [s]<br /> (1-60)</span>
-  <button ng-click="$ctrl.sort($ctrl.cities, 3, $ctrl.sortType)">TEMP</button>
-  <button ng-click="$ctrl.sort($ctrl.cities, 4, $ctrl.sortType)">WIND</button>
-  <button ng-click="$ctrl.sort($ctrl.cities, 5, $ctrl.sortType)">PRESSURE</button>
+<div class="top-pane">
+  <city  ng-repeat="city in $ctrl.cities"
+         city="city[0]"
+         addcity="$ctrl.addcity(name, checked, time)">
+  </city>
 </div>
 
-<city city-property="city"
-      ng-repeat="city in $ctrl.cities"
-      getdata="$ctrl.isChecked(location, time, checked)">
-</city>
+
+<span>SORT BY OPTIONS:</span>
+<div class="top-bar">
+  <button ng-click="$ctrl.sort($ctrl.arrayOfCities, 0, $ctrl.sortType)">NAME</button>
+  <button ng-click="$ctrl.sort($ctrl.arrayOfCities, 4, $ctrl.sortType)">TEMP</button>
+  <button ng-click="$ctrl.sort($ctrl.arrayOfCities, 5, $ctrl.sortType)">WIND</button>
+  <button ng-click="$ctrl.sort($ctrl.arrayOfCities, 6, $ctrl.sortType)">PRESSURE</button>
+</div>
+
+<city-list cities="$ctrl.arrayOfCities"></city-list>
