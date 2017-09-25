@@ -4,6 +4,7 @@
            ng-model="$ctrl.checked"
            ng-click="$ctrl.checkData()"/>
     {{$ctrl.city}}
+    <span>Refresh {{$ctrl.time}} times per minute</span>
     <input type="text"
            ng-model="$ctrl.time"
            ng-class="{dirty: $ctrl.valid == false}"

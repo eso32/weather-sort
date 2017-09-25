@@ -1,14 +1,5 @@
 'use strict';
 
-function findIndex(location, array){
-  for(var i = 0; i<array.length; i++){
-    if(location === array[i][0]) return i
-  }
-  return -1;
-}
-
-
-
 angular.module('openweatherApp')
           .component('fetcher', {
             restrict: 'E',
@@ -16,62 +7,74 @@ angular.module('openweatherApp')
             controller: ['$sce', '$http', 'fetchData', '$interval', function ($sce, $http, fetchData, $interval) {
               var vm = this;
               this.checked;
-              this.sortType = 2;
-              this.arrayOfCities = [];
-              this.intervalList={};
+              this.sortType = 2; //Rodzaj sortowania (bubble/selection)
+              this.cityListArr = []; //Lista miast dodanych do komponentu cityList
+              this.sortClicks = [0,0,0,0,0,0,0]; //Macierz zliczająca kliknięcia - do array.reverse()
               fetchData.then(function(response) {
                 vm.cities = response;
               });
 
+//------------Wyszukiwanie index na podstawie nazwy
+              function findIndex(location, array){
+                for(var i = 0; i<array.length; i++){
+                  if(location === array[i][0]) return i
+                }
+                return -1;
+              }
+
+//------------Dodanie nowego miasta do komponentu cityList - tablica cityListArr
               this.addcity = function(name, checked, time){
                 if(checked){
                   var index = findIndex(name, vm.cities);
                   var newCity = vm.cities[index];
-                  vm.arrayOfCities.push(newCity);             //dodajemy nowe miasto do listy miast obserwowanych
-                  var newIndex = vm.arrayOfCities.length-1;   //index nowo dodanego miasta
-                  vm.arrayOfCities[newIndex][3] = time;
+                  vm.cityListArr.push(newCity);             //dodajemy nowe miasto do listy miast obserwowanych
+                  var newIndex = vm.cityListArr.length-1;   //index nowo dodanego miasta
+                  vm.cityListArr[newIndex][3] = time;
                   giveMeData(name);
                   this.getCurrentData(name);
 
-                } else {
-                  var index = findIndex(name, vm.arrayOfCities);
-                  vm.arrayOfCities.splice(index,1);
+                } else { //Odznaczenie jeśli już jest zaznaczone oraz "posprzątanie" po $interval
+                  var index = findIndex(name, vm.cityListArr);
+                  $interval.cancel(vm.cityListArr[index][2]);
+                  vm.cityListArr.splice(index,1);
                 }
               }
 
+//------------Ustanowienie interwału czasowego
               this.getCurrentData = function(name){
-                var index = findIndex(name, vm.arrayOfCities);
-                vm.arrayOfCities[index][2] = $interval( function(){giveMeData(name)}, vm.arrayOfCities[index][3]*1000);
+                var index = findIndex(name, vm.cityListArr);
+                var times = (60/vm.cityListArr[index][3])*1000;
+                vm.cityListArr[index][2] = $interval( function(){giveMeData(name)}, times);
               }
 
               function giveMeData(name){
-                var index = findIndex(name, vm.arrayOfCities);
-                var trustedUrl = $sce.trustAsResourceUrl(vm.arrayOfCities[index][1]);
+                var index = findIndex(name, vm.cityListArr);
+                var trustedUrl = $sce.trustAsResourceUrl(vm.cityListArr[index][1]);
                 $http.jsonp(trustedUrl, {jsonpCallbackParam: 'callback'})
                       .then(function(response){
-                        vm.arrayOfCities[index][4] = response.data.main.temp;
-                        vm.arrayOfCities[index][5] = response.data.wind.speed;
-                        vm.arrayOfCities[index][6] = response.data.main.pressure;
-                        console.log(vm.arrayOfCities[index][0] + ' ' + vm.arrayOfCities[index][3]);
+                        vm.cityListArr[index][4] = response.data.main.temp;
+                        vm.cityListArr[index][5] = response.data.wind.speed;
+                        vm.cityListArr[index][6] = response.data.main.pressure;
+                        console.log(vm.cityListArr[index][0]);
                       })
               }
 
+//-----------Sortowanie
+              //Wywołanie sortowanie w zaileżności od sortType (radio button)
               this.sort = function(arr, elem, sortType){
                 if(sortType == 1){
-                  bubbleSort(arr, elem);
+                  vm.sortClicks[elem]+=1;
+                  (vm.sortClicks[elem]%2 !== 0) ? bubbleSort(arr, elem) : arr.reverse();
                 } else if(sortType == 2){
-                  selectionSort(arr, elem);
+                  vm.sortClicks[elem]+=1;
+                  (vm.sortClicks[elem]%2 !== 0) ? selectionSort(arr, elem) : arr.reverse();
                 }
               }
 
               function bubbleSort(arr, elem){
-                  console.log("bubble");
                   var len = arr.length;
-
-                   for (var i = len-1; i>=0; i--){ //for(4; i>=0; i--)
-                    // console.log('i='+i);
+                   for (var i = len-1; i>=0; i--){
                      for(var j = 1; j<=i; j++){
-                        // console.log('j='+j);
                        if(arr[j-1][elem]>arr[j][elem]){
                            var temp = arr[j-1];
                            arr[j-1] = arr[j];
@@ -83,7 +86,6 @@ angular.module('openweatherApp')
               }
 
               function selectionSort(arr, elem){
-                console.log("selection");
                 var minIdx, temp,
                     len = arr.length;
                 for(var i = 0; i < len; i++){

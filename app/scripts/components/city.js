@@ -10,7 +10,7 @@ angular.module('openweatherApp')
             templateUrl: 'views/city.html',
             controller: function () {
               this.valid = true;
-              this.time = 4;
+              this.time = 60;
               this.checked = false;
 
               this.checkData = function(){

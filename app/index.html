@@ -29,6 +29,11 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
+    <script>
+    $(document).ready(function(){
+      $('input').tooltip({placement: 'bottom',trigger: 'manual'}).tooltip('show');
+    });
+    </script>
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
