@@ -2,7 +2,7 @@
   <span>
     <input type="checkbox"
            ng-model="$ctrl.checked"
-           ng-click="$ctrl.checkData()"/>
+           ng-click="$ctrl.checkData($ctrl.time)"/>
     {{$ctrl.city}}
     <span>Refresh {{$ctrl.time}} times per minute</span>
     <input type="text"

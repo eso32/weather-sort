@@ -32,7 +32,7 @@ angular.module('openweatherApp')
                   vm.cityListArr[newIndex][3] = time;
                   giveMeData(name);
                   this.getCurrentData(name);
-
+                  return vm.cityListArr;
                 } else { //Odznaczenie jeśli już jest zaznaczone oraz "posprzątanie" po $interval
                   var index = findIndex(name, vm.cityListArr);
                   $interval.cancel(vm.cityListArr[index][2]);
@@ -101,6 +101,12 @@ angular.module('openweatherApp')
                 }
                 return arr;
               }
+
+//------------Dopisanie funkcji wewnętrznych do scope na potrzeby testów
+              this.findIndex = findIndex;
+              this.bubbleSort = bubbleSort;
+              this.selectionSort = selectionSort;
+
 
             }]
         });

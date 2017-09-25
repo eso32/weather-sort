@@ -13,13 +13,13 @@ angular.module('openweatherApp')
               this.time = 60;
               this.checked = false;
 
-              this.checkData = function(){
-                if(this.time >= 1 && this.time <= 60){
+              this.checkData = function(time){
+                if(time >= 1 && time <= 60){
                   this.valid = true;
                   this.addcity({
                     name: this.city,
                     checked: this.checked,
-                    time: this.time
+                    time: time
                   });
                 } else {
                   this.valid = false;
